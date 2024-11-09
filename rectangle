@@ -1,0 +1,37 @@
+import rospy
+from geometry_msgs.msg import Twist
+import time
+
+def move_straight(pub, speed, duration):
+    move_cmd = Twist()
+    move_cmd.linear.x = speed
+    move_cmd.angular.z = 0
+    pub.publish(move_cmd)
+    time.sleep(duration)
+
+def turn(pub, speed, duration):
+    turn_cmd = Twist()
+    turn_cmd.linear.x = 0
+    turn_cmd.angular.z = speed
+    pub.publish(turn_cmd)
+    time.sleep(duration)
+
+def move_in_rectangle(pub, length, breadth, linear_speed, angular_speed):
+    for _ in range(2):  # Two sets of length and breadth to make a rectangle
+        move_straight(pub, linear_speed, length)
+        turn(pub, angular_speed, 1.57)  # 90 degree turn
+        move_straight(pub, linear_speed, breadth)
+        turn(pub, angular_speed, 1.57)
+
+if _name_ == "_main_":
+    rospy.init_node('turtle_rectangle', anonymous=True)
+    pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+    time.sleep(2)  # Allow the node to initialize
+
+    # Define rectangle dimensions and speed
+    length = 2  # Customize as needed
+    breadth = 1  # Customize as needed
+    linear_speed = 1.0
+    angular_speed = 1.0
+
+    move_in_rectangle(pub, length, breadth, linear_speed, angular_speed)
